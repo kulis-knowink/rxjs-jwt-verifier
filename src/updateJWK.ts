@@ -14,10 +14,8 @@ export const initJWK = (jwkUrl: string, expiresIn = TWENTY_MINUTES) => {
   let jwk;
 
 
-  const setJWK = next => {
-    console.log('settings', next)
-    jwk = next;
-  }
+  const setJWK = next => jwk = next;
+
 
   const getJWK = () => jwk;
   const jwkBuilder$ = acquireJWK(jwkUrl, expiresIn);
