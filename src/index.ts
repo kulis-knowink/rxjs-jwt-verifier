@@ -32,7 +32,6 @@ export const authenticate$ =  (config: Config): HttpMiddlewareEffect => {
 
   return (req$: any): Observable<HttpRequest> => req$.pipe(
     updateJWK,
-    tap(console.log),
     mergeMap(req => !isAuthorized(config, getJWK, req) ? throwError(new HttpError('Not Authorized', HttpStatus.UNAUTHORIZED)) : of(req))
   )
 }
