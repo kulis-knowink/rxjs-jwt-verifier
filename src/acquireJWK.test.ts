@@ -1,4 +1,4 @@
-import acquireJWK from './acquireJWK';
+import { acquireJWK } from './acquireJWK';
 import axios from 'axios';
 
 const region = 'us-east-1';

@@ -1,4 +1,4 @@
-import validateJWT from './validateJWT'
+import { validateJWT } from './validateJWT'
 import { Observable } from 'rxjs'
 import axios from 'axios';
 import { ajax } from 'rxjs/ajax';

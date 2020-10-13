@@ -72,7 +72,7 @@ const validateClaims = (payload: any): any => {
 }
 
 
-export default payload => {
+export const validateJWT = payload => {
   try {
     payload = confirmStructure(payload);
     payload = decodeToken(payload);
