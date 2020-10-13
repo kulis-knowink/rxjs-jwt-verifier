@@ -52,7 +52,7 @@ module.exports = (env, argv) => {
   if (argv.mode === "development") {
 
   } else if (argv.mode === "production") {
-    
+
   } else {
     throw new Error("Specify env");
   }
