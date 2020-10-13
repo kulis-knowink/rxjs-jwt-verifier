@@ -14,28 +14,30 @@ export const initJWK = (jwkUrl: string, expiresIn = TWENTY_MINUTES) => {
   let jwk;
 
 
-  const setJWK = next => jwk = next;
+  const setJWK = next => {
+    console.log('settings', next)
+    jwk = next;
+  }
 
   const getJWK = () => jwk;
   const jwkBuilder$ = acquireJWK(jwkUrl, expiresIn);
   jwkBuilder$().subscribe(response => setJWK(response.jwk));
 
-  const updateJWK$ = req$ =>
-    req$.pipe(
-      switchMap(req => jwkBuilder$().pipe(
-        map((response: Response) => {
-          setJWK(response.jwk)
-          return of([])
-        }),
-        mergeMap(() => of(req))
-      )),
-    )
+  const updateJWK = switchMap(req =>
+    jwkBuilder$().pipe(
+      map((response: Response) => {
+        setJWK(response.jwk)
+        return of([])
+      }),
+      mergeMap(() => of(req))
+    ))
+
 
 
   return {
       setJWK,
       getJWK,
-      updateJWK$
+      updateJWK
   }
 
 }
