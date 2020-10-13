@@ -1,4 +1,4 @@
-serialized# RXJS JWT Verifier
+# RXJS JWT Verifier
 
 A rxjs middleware for marblejs that authenticates JWT tokens.
 
