@@ -10,7 +10,7 @@ A rxjs middleware for marblejs that authenticates JWT tokens.
 
 ### Applying middleware
 
-To verify a JWT is simple. Simply pass the config to the middleware and it will authenticate a JWT.
+To verify a JWT is simple. Simply pass the config to the middleware and it will authenticate an `idToken` JWT.
 
 #### Config Structure
 
