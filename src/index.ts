@@ -3,6 +3,7 @@ import { map, mergeMap, mapTo, tap, switchMap } from 'rxjs/operators';
 import { of, throwError, Observable } from 'rxjs';
 import { HttpMiddlewareEffect, HttpError, HttpStatus, HttpRequest } from '@marblejs/core';
 import { initJWK } from './updateJWK';
+import decode from 'jwt-decode';
 
 interface Config {
   region: string;
@@ -11,6 +12,10 @@ interface Config {
   issuer: string;
   jwkUrl: string;
   expiresIn: number;
+}
+
+interface Scopes {
+  [index: number]: string;
 }
 
 
@@ -35,3 +40,25 @@ export const authenticate$ =  (config: Config): HttpMiddlewareEffect => {
     mergeMap(req => !isAuthorized(config, getJWK, req) ? throwError(new HttpError('Not Authorized', HttpStatus.UNAUTHORIZED)) : of(req))
   )
 }
+
+export const authorize = (allowedScopes: Scopes): any => mergeMap(req => {
+      const {
+        headers: {
+          accesstoken
+        }
+      } = req;
+
+      const {
+        scope
+      } = decode(accesstoken)
+      const scopes = scope.split(' ')
+
+      console.log(allowedScopes, scopes)
+      let isAuthorized = false;
+      const authorized = allowedScopes.map(allowed => {
+        if(isAuthorized) return;
+        isAuthorized = !!scopes.find(scope => scope === allowed)
+      })
+
+      return isAuthorized ? of(req) : throwError({ response: { status: 403 }})
+    })
