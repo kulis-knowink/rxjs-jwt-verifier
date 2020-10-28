@@ -14,11 +14,6 @@ interface Config {
   expiresIn: number;
 }
 
-interface Scopes {
-  [index: number]: string;
-}
-
-
 
 export const isAuthorized = (config, getCurrentJWK, req) => {
   let payload = {
@@ -41,7 +36,7 @@ export const authenticate$ =  (config: Config): HttpMiddlewareEffect => {
   )
 }
 
-export const authorize = (allowedScopes: Scopes): any => mergeMap(req => {
+export const authorize = (allowedScopes: string[]): any => mergeMap((req: any) => {
       const {
         headers: {
           accesstoken
@@ -53,7 +48,6 @@ export const authorize = (allowedScopes: Scopes): any => mergeMap(req => {
       } = decode(accesstoken)
       const scopes = scope.split(' ')
 
-      console.log(allowedScopes, scopes)
       let isAuthorized = false;
       const authorized = allowedScopes.map(allowed => {
         if(isAuthorized) return;
