@@ -1,4 +1,4 @@
-import { validateJWT } from './validateJWT'
+import { validateIDToken, validateAccessToken } from './validateJWT'
 import { map, mergeMap, mapTo, tap, switchMap } from 'rxjs/operators';
 import { of, throwError, Observable } from 'rxjs';
 import { HttpMiddlewareEffect, HttpError, HttpStatus, HttpRequest } from '@marblejs/core';
@@ -15,37 +15,55 @@ interface Config {
 }
 
 
-export const isAuthorized = (config, getCurrentJWK, req) => {
+export const isAuthenticated = (config, getCurrentJWK, req) => {
   let payload = {
     ...config,
     jwk: getCurrentJWK(),
     idToken: req.headers?.idtoken
   }
-  return validateJWT(payload)
+  return validateIDToken(payload)
 };
+
+export const isAuthorized = (config, getCurrentJWK, req) => {
+  let payload = {
+    ...config,
+    jwk: getCurrentJWK(),
+    accessToken: req.headers?.accesstoken
+  }
+
+  return validateAccessToken(payload)
+}
 
 export const authenticate$ =  (config: Config): HttpMiddlewareEffect => {
 
   const { jwkUrl, expiresIn } = config;
 
   const { getJWK, updateJWK } = initJWK(jwkUrl, expiresIn)
-
   return (req$: any): Observable<HttpRequest> => req$.pipe(
     updateJWK,
-    mergeMap(req => !isAuthorized(config, getJWK, req) ? throwError(new HttpError('Not Authorized', HttpStatus.UNAUTHORIZED)) : of(req))
+    mergeMap(req => !isAuthenticated(config, getJWK, req) || !isAuthorized(config, getJWK, req) ? throwError(new HttpError('Not Authorized', HttpStatus.UNAUTHORIZED)) : of(req))
   )
 }
 
-export const authorize = (allowedScopes: string[]): any => mergeMap((req: any) => {
+const associcated = (a, b) => a === b;
+
+export const authorize = (allowedScopes: string[]): any =>
+
+  mergeMap((req: any) => {
       const {
         headers: {
-          accesstoken
+          accesstoken,
+          idtoken
         }
       } = req;
 
       const {
-        scope
+        scope,
+        sub
       } = decode(accesstoken)
+
+      const idToken = decode(idtoken);
+
       const scopes = scope.split(' ')
 
       let isAuthorized = false;
@@ -54,5 +72,5 @@ export const authorize = (allowedScopes: string[]): any => mergeMap((req: any) =
         isAuthorized = !!scopes.find(scope => scope === allowed)
       })
 
-      return isAuthorized ? of(req) : throwError({ response: { status: 403 }})
+      return isAuthorized && associcated(sub, idToken.sub) ? of(req) : throwError({ response: { status: 403 }})
     })

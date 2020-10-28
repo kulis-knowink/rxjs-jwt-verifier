@@ -1,4 +1,4 @@
-import { validateJWT } from './validateJWT'
+import { validateIDToken } from './validateJWT'
 import { Observable } from 'rxjs'
 import axios from 'axios';
 import { ajax } from 'rxjs/ajax';
@@ -74,7 +74,7 @@ const config = {
   verify return true/false
 */
 
-describe('validateJWT tests', () => {
+describe('validateIDToken tests', () => {
 
   const payload = {
     ...config,
@@ -83,27 +83,27 @@ describe('validateJWT tests', () => {
   }
 
   it('should validate', () => {
-    const valid = validateJWT(payload)
+    const valid = validateIDToken(payload)
     expect(valid).toBe(true);
   })
 
   it('should fail when invalid token - confirmStructure', async () => {
-    const valid = validateJWT({...payload, idToken: 'abc'})
+    const valid = validateIDToken({...payload, idToken: 'abc'})
     expect(valid).toBe(false);
   })
 
   it('should fail when invalid token - decodedHeader', async () => {
-    const valid = validateJWT({...payload, idToken: 'a.b.c'})
+    const valid = validateIDToken({...payload, idToken: 'a.b.c'})
     expect(valid).toBe(false);
   })
 
   it('should fail when not matching kid', async () => {
-    const valid = validateJWT({...payload, jwk: jwkWithDifferentKID})
+    const valid = validateIDToken({...payload, jwk: jwkWithDifferentKID})
     expect(valid).toBe(false);
   })
 
   it('should fail when bad signature', async () => {
-    const valid = validateJWT({...payload, idToken: payload.idToken + 'bad juju'})
+    const valid = validateIDToken({...payload, idToken: payload.idToken + 'bad juju'})
     expect(valid).toBe(false);
   })
 
@@ -115,7 +115,7 @@ describe('validateJWT tests', () => {
       .setIssuer(issuer)
       .setSubject(appClientId)
       .compact()
-    const valid = validateJWT({...payload, idToken})
+    const valid = validateIDToken({...payload, idToken})
     expect(valid).toBe(false);
   })
 
@@ -132,7 +132,7 @@ describe('validateJWT tests', () => {
       .setIssuer(issuer)
       .setSubject(appClientId)
       .compact()
-    const valid = validateJWT({...payload, idToken})
+    const valid = validateIDToken({...payload, idToken})
     expect(valid).toBe(false);
   })
 
@@ -144,7 +144,7 @@ describe('validateJWT tests', () => {
       .setIssuer('fppbar')
       .setSubject(appClientId)
       .compact()
-    const valid = validateJWT({...payload, idToken})
+    const valid = validateIDToken({...payload, idToken})
     expect(valid).toBe(false);
   })
 
@@ -161,7 +161,7 @@ describe('validateJWT tests', () => {
         .setIssuer(issuer)
         .setSubject(appClientId)
         .compact()
-      const valid = validateJWT({...payload, idToken})
+      const valid = validateIDToken({...payload, idToken})
       expect(valid).toBe(false);
     })
 })
