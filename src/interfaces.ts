@@ -37,7 +37,8 @@ export interface Payload {
   decoded?: IdToken;
   appClientId: string,
   userPoolId: string,
-  issuer: string
+  issuer: string,
+  accessToken?: string
 }
 
 export interface Decoded {

@@ -45,7 +45,7 @@ export const authenticate$ =  (config: Config): HttpMiddlewareEffect => {
   )
 }
 
-const associcated = (a, b) => a === b;
+const associcated = (a: string, b: string): boolean => a === b;
 
 export const authorize = (allowedScopes: string[]): any =>
 
@@ -62,7 +62,7 @@ export const authorize = (allowedScopes: string[]): any =>
         sub
       } = decode(accesstoken)
 
-      const idToken = decode(idtoken);
+      const idToken: any = decode(idtoken);
 
       const scopes = scope.split(' ')
 
