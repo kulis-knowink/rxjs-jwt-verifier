@@ -1,6 +1,6 @@
 {
   "name": "@knowink-dev/rxjs-jwt-verifier",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "wraps rxjs around jwt-verifier",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
